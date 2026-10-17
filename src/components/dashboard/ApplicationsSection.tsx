@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Briefcase, Plus, SearchX } from "lucide-react";
-import { toast } from "sonner";
 import { ApplicationCard } from "@/components/dashboard/ApplicationCard";
 import { ApplicationFilters } from "@/components/dashboard/ApplicationFilters";
 import { ApplicationFormDialog } from "@/components/dashboard/ApplicationFormDialog";
@@ -9,47 +8,18 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { filterApplications, type ApplicationFormValues } from "@/lib/applications";
-import type { ApplicationStatus, JobApplication } from "@/types/application";
+import { filterApplications } from "@/lib/applications";
+import type { ApplicationStatus } from "@/types/application";
+import type { ApplicationManager } from "@/hooks/useApplicationManager";
 
-interface Props {
-  apps: JobApplication[];
-  loaded: boolean;
-  addApp: (values: ApplicationFormValues) => void;
-  updateApp: (id: string, values: ApplicationFormValues) => void;
-  deleteApp: (id: string) => void;
-}
+/** The full applications list with search, filters and add/edit/delete dialogs. Shared by the Dashboard and Applications pages. */
+export function ApplicationsSection({ manager }: { manager: ApplicationManager }) {
+  const { apps, loaded, openAdd, openEdit, formOpen, setFormOpen, editing, handleSubmit, toDelete, setToDelete, confirmDelete } = manager;
 
-/** The full applications list with search, filters and add/edit/delete. Shared by the Dashboard and Applications pages. */
-export function ApplicationsSection({ apps, loaded, addApp, updateApp, deleteApp }: Props) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "All">("All");
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<JobApplication | null>(null);
-  const [toDelete, setToDelete] = useState<JobApplication | null>(null);
 
   const visible = filterApplications(apps, search, statusFilter);
-
-  const openAdd = () => { setEditing(null); setFormOpen(true); };
-  const openEdit = (app: JobApplication) => { setEditing(app); setFormOpen(true); };
-
-  const handleSubmit = (values: ApplicationFormValues) => {
-    if (editing) {
-      updateApp(editing.id, values);
-      toast.success(`Updated ${values.role} at ${values.company}`);
-    } else {
-      addApp(values);
-      toast.success(`Added ${values.role} at ${values.company}`);
-    }
-    setFormOpen(false);
-  };
-
-  const confirmDelete = () => {
-    if (!toDelete) return;
-    deleteApp(toDelete.id);
-    toast.success(`Deleted ${toDelete.role} at ${toDelete.company}`);
-    setToDelete(null);
-  };
 
   return (
     <section className="space-y-4">
