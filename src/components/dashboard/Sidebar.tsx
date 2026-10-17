@@ -1,10 +1,11 @@
+import { Link } from "@tanstack/react-router";
 import { Briefcase, LayoutDashboard, ListChecks, Settings, X } from "lucide-react";
 
 const links = [
-  { label: "Dashboard", icon: LayoutDashboard, active: true },
-  { label: "Applications", icon: ListChecks, active: false },
-  { label: "Settings", icon: Settings, active: false },
-];
+  { label: "Dashboard", icon: LayoutDashboard, to: "/" },
+  { label: "Applications", icon: ListChecks, to: "/applications" },
+  { label: "Settings", icon: Settings, to: "/settings" },
+] as const;
 
 interface SidebarProps {
   open: boolean;
@@ -35,19 +36,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
         <nav className="flex flex-col gap-1 px-3">
-          {links.map(({ label, icon: Icon, active }) => (
-            <a
+          {links.map(({ label, icon: Icon, to }) => (
+            <Link
               key={label}
-              href="#"
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
-              }`}
+              to={to}
+              onClick={onClose}
+              activeOptions={{ exact: to === "/" }}
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground [&_svg]:data-[status=active]:text-sidebar-primary"
             >
-              <Icon className={`h-4 w-4 ${active ? "text-sidebar-primary" : ""}`} />
+              <Icon className="h-4 w-4" />
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
         <p className="mt-auto px-6 py-6 text-xs opacity-60">Your job hunt, organised.</p>
