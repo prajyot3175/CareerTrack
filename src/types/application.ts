@@ -7,6 +7,6 @@ export interface JobApplication {
   role: string;
   appliedDate: string; // ISO date, e.g. "2026-10-01"
   status: ApplicationStatus;
-  jobLink?: string;
-  notes?: string;
+  jobLink?: string | undefined;
+  notes?: string | undefined;
 }
