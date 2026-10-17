@@ -1,4 +1,4 @@
-import { Calendar, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, Pencil, Trash2 } from "lucide-react";
 import type { ApplicationStatus, JobApplication } from "@/types/application";
 
 // Maps each status to its colour tokens (defined in styles.css).
@@ -9,8 +9,14 @@ export const statusStyles: Record<ApplicationStatus, string> = {
   Rejected: "bg-status-rejected-bg text-status-rejected",
 };
 
-export function ApplicationCard({ app }: { app: JobApplication }) {
-  const date = new Date(app.appliedDate).toLocaleDateString("en-IN", {
+interface Props {
+  app: JobApplication;
+  onEdit: (app: JobApplication) => void;
+  onDelete: (app: JobApplication) => void;
+}
+
+export function ApplicationCard({ app, onEdit, onDelete }: Props) {
+  const date = new Date(app.appliedDate + "T00:00:00").toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -27,8 +33,8 @@ export function ApplicationCard({ app }: { app: JobApplication }) {
           {app.status}
         </span>
       </div>
-      {app.notes && <p className="mt-3 line-clamp-2 text-sm">{app.notes}</p>}
-      <div className="mt-auto flex items-center justify-between pt-4 text-xs text-muted-foreground">
+      {app.notes && <p className="mt-3 line-clamp-2 break-words text-sm">{app.notes}</p>}
+      <div className="mt-auto flex items-center justify-between gap-2 pt-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Calendar className="h-3.5 w-3.5" /> {date}
         </span>
@@ -37,6 +43,14 @@ export function ApplicationCard({ app }: { app: JobApplication }) {
             Job post <ExternalLink className="h-3.5 w-3.5" />
           </a>
         )}
+      </div>
+      <div className="mt-4 flex gap-2 border-t pt-3">
+        <button onClick={() => onEdit(app)} className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Edit ${app.role} at ${app.company}`}>
+          <Pencil className="h-3.5 w-3.5" /> Edit
+        </button>
+        <button onClick={() => onDelete(app)} className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-destructive hover:bg-status-rejected-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Delete ${app.role} at ${app.company}`}>
+          <Trash2 className="h-3.5 w-3.5" /> Delete
+        </button>
       </div>
     </article>
   );
